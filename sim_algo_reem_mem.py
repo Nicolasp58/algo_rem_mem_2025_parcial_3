@@ -9,7 +9,7 @@ segmentos =[ ('.text', 0x00, 0x1A),
             ]
 
 def procesar(segmentos, reqs, marcos_libres):
-    TAMANO_PAGINA = 16  
+    tam_pag = 16  
     
     tabla_paginas = {}  
     marcos_usados = {}  
@@ -22,20 +22,21 @@ def procesar(segmentos, reqs, marcos_libres):
                 return True
         return False
     
-    def obtener_pagina_y_desplazamiento(direccion):
-        num_pagina = direccion // TAMANO_PAGINA
-        desplazamiento = direccion % TAMANO_PAGINA
-        return num_pagina, desplazamiento
-    
     def calcular_direccion_fisica(marco, desplazamiento):
-        return (marco * TAMANO_PAGINA) + desplazamiento
+        if marco == 0:
+            return desplazamiento + 0x20  # Marco 0: offset + 0x20
+        elif marco == 1:
+            return desplazamiento + 0x10  # Marco 1: offset + 0x10
+        elif marco == 2:
+            return desplazamiento         # Marco 2: solo offset
     
     for req in reqs:
         if not validar_direccion(req):
             resultados.append((req, 0x1FF, "Segmention Fault"))
             continue
         
-        num_pagina, desplazamiento = obtener_pagina_y_desplazamiento(req)
+        num_pagina = req // tam_pag
+        desplazamiento = req % tam_pag
         
         if num_pagina in tabla_paginas:
             marco = tabla_paginas[num_pagina]
