@@ -23,17 +23,12 @@ def procesar(segmentos, reqs, marcos_libres):
         return False
     
     def calcular_direccion_fisica(marco, desplazamiento):
-        if marco == 0:
-            return desplazamiento + 0x20  # Marco 0: offset + 0x20
-        elif marco == 1:
-            return desplazamiento + 0x10  # Marco 1: offset + 0x10
-        elif marco == 2:
-            return desplazamiento         # Marco 2: solo offset
+        return(marco * tam_pag) + desplazamiento
     
     for req in reqs:
         if not validar_direccion(req):
             resultados.append((req, 0x1FF, "Segmention Fault"))
-            continue
+            return resultados
         
         num_pagina = req // tam_pag
         desplazamiento = req % tam_pag
